@@ -46,6 +46,12 @@
 			<version>5.7.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>folia-api</artifactId>
+			<version>1.21-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

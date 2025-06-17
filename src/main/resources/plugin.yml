@@ -2,3 +2,7 @@ name: KillCounter
 version: 0.0.1-SNAPSHOT
 main: com.jinzo.KillCounter
 api-version: 1.16
+folia-supported: true
+commands:
+  lastKilled:
+    description: Shows the last player killed with the weapon you're holding
