@@ -37,7 +37,7 @@ public class KillCounter extends JavaPlugin implements Listener, TabExecutor {
     private static final Set<Material> TRACKED_ITEMS = Set.of(
             Material.WOODEN_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.NETHERITE_SWORD,
             Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE,
-            Material.BOW
+            Material.BOW, Material.CROSSBOW, Material.MACE, Material.TRIDENT
     );
 
     // Use a thread-safe map for concurrency under Folia
