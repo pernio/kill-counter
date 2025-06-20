@@ -6,3 +6,5 @@ folia-supported: true
 commands:
   lastKilled:
     description: Shows the last player killed with the weapon you're holding
+  resetKills:
+    description: Resets the kill counter and last killed player for the held weapon.

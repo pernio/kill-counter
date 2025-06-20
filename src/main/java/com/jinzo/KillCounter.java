@@ -228,21 +228,68 @@ public class KillCounter extends JavaPlugin implements Listener, TabExecutor {
             return true;
         }
 
-        String key = getWeaponKey(weapon);
+        ItemMeta meta = weapon.getItemMeta();
+        if (meta == null) {
+            player.sendMessage(ChatColor.RED + "This weapon has no metadata.");
+            return true;
+        }
+
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        NamespacedKey uuidKey = new NamespacedKey(this, "weapon-uuid");
+        String key = container.get(uuidKey, PersistentDataType.STRING);
+
+        if (key == null || !killData.containsKey(key)) {
+            player.sendMessage(ChatColor.YELLOW + "This weapon has no kill data.");
+            return true;
+        }
+
         if (key.isEmpty()) {
             player.sendMessage(ChatColor.RED + "This weapon has no data.");
             return true;
         }
 
-        WeaponKillData data = killData.get(key);
-        if (data == null || data.lastKilled == null) {
-            player.sendMessage(ChatColor.YELLOW + "No kills recorded yet for this weapon.");
+        if (command.getName().equalsIgnoreCase("lastKilled")) {
+            WeaponKillData data = killData.get(key);
+            if (data == null || data.lastKilled == null) {
+                player.sendMessage(ChatColor.YELLOW + "No kills recorded yet for this weapon.");
+                return true;
+            }
+
+            String lastKilledName = Bukkit.getOfflinePlayer(data.lastKilled).getName();
+            player.sendMessage(ChatColor.GREEN + "Last player killed with this weapon: " + ChatColor.GOLD + lastKilledName);
             return true;
         }
 
-        String lastKilledName = Bukkit.getOfflinePlayer(data.lastKilled).getName();
-        player.sendMessage(ChatColor.GREEN + "Last player killed with this weapon: " + ChatColor.GOLD + lastKilledName);
-        return true;
+        if (command.getName().equalsIgnoreCase("resetKills")) {
+            // Remove from memory
+            killData.remove(key);
+
+            // Remove UUID metadata and lore lines
+            container.remove(uuidKey);
+
+            if (meta.hasLore()) {
+                List<String> lore = new ArrayList<>(meta.getLore());
+                lore.removeIf(line -> {
+                    String stripped = ChatColor.stripColor(line);
+                    return stripped.startsWith("Players killed:") || stripped.startsWith("Last killed:");
+                });
+                meta.setLore(lore.isEmpty() ? null : lore);
+            }
+
+            // Apply changes safely
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    weapon.setItemMeta(meta);
+                }
+            }.runTask(this);
+
+            saveKillData();
+            player.sendMessage(ChatColor.GREEN + "Kill tracking has been fully reset for this weapon.");
+            return true;
+        }
+
+        return false;
     }
 
     @Override
