@@ -1,4 +1,4 @@
-# Kill counterAdd commentMore actions
+# Kill counter
 Paper plugin to track unique kills on weapons for extra lore.
 
 ### Features <br/>

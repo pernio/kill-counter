@@ -1,4 +1,4 @@
-name: Notify Discord on Push
+name: Discord Notify
 
 on:
   push:
@@ -6,21 +6,16 @@ on:
       - main
 
 jobs:
-  notify-discord:
+  notify:
     runs-on: ubuntu-latest
-
     steps:
       - name: Send Discord notification
-        uses: actions/http-client@v1
-        id: discord_notify
+        uses: fjogeleit/http-request-action@v1
         with:
           url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           method: POST
-          headers: '{"Content-Type": "application/json"}'
+          contentType: 'application/json'
           body: |
             {
-              "content": "**${{ github.actor }}** pushed to branch **${{ github.ref_name }}** in repository **${{ github.repository }}**.
-
-Commit message: ${{ github.event.head_commit.message }}
-Commit URL: ${{ github.event.head_commit.url }}"
-  }
+              "content": "**New commit pushed!**\n**Message:** ${{ github.event.head_commit.message }}\n**URL:** ${{ github.event.head_commit.url }}"
+            }
