@@ -1,5 +1,6 @@
 package com.jinzo.commands;
 
+import com.jinzo.data.ConfigManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -17,8 +18,12 @@ import java.util.UUID;
 
 public class ShowItemCommand implements CommandExecutor {
 
-    private static final long COOLDOWN = 5000;
+    private final ConfigManager configManager;
     private final Map<UUID, Long> cooldowns = new HashMap<>();
+
+    public ShowItemCommand(ConfigManager configManager) {
+        this.configManager = configManager;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -30,10 +35,12 @@ public class ShowItemCommand implements CommandExecutor {
         UUID playerId = player.getUniqueId();
         long currentTime = System.currentTimeMillis();
 
+        long cooldownMillis = configManager.getCooldown() * 1000L;
+
         if (cooldowns.containsKey(playerId)) {
             long lastUsed = cooldowns.get(playerId);
-            if ((currentTime - lastUsed) < COOLDOWN) {
-                long timeLeft = (COOLDOWN - (currentTime - lastUsed)) / 1000;
+            if ((currentTime - lastUsed) < cooldownMillis) {
+                long timeLeft = (cooldownMillis - (currentTime - lastUsed)) / 1000;
                 player.sendMessage(Component.text("Please wait " + timeLeft + " more seconds before using this command again.", NamedTextColor.RED));
                 return true;
             }

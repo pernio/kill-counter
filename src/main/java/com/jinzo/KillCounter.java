@@ -2,6 +2,7 @@ package com.jinzo;
 
 import com.jinzo.commands.KillCommandExecutor;
 import com.jinzo.commands.ShowItemCommand;
+import com.jinzo.data.ConfigManager;
 import com.jinzo.data.KillDataManager;
 import com.jinzo.listeners.DeathListener;
 import com.jinzo.listeners.ItemBreakListener;
@@ -10,9 +11,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class KillCounter extends JavaPlugin {
 
     private KillDataManager killDataManager;
+    private ConfigManager configManager;
 
     @Override
     public void onEnable() {
+        configManager = new ConfigManager(this);
         this.killDataManager = new KillDataManager(this);
         killDataManager.loadKillData();
 
@@ -22,7 +25,7 @@ public class KillCounter extends JavaPlugin {
         var executor = new KillCommandExecutor(this, killDataManager);
         getCommand("lastKilled").setExecutor(executor);
         getCommand("resetKills").setExecutor(executor);
-        getCommand("showitem").setExecutor(new ShowItemCommand());
+        getCommand("showitem").setExecutor(new ShowItemCommand(configManager));
     }
 
     @Override
