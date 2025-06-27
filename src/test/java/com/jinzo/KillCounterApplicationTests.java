@@ -3,7 +3,7 @@ package com.jinzo;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FirstPluginApplicationTests {
+public class KillCounterApplicationTests {
 
 	@Test
 	void testExample() {

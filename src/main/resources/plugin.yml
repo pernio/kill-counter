@@ -1,0 +1,29 @@
+name: KillCounter
+version: 0.0.1-SNAPSHOT
+main: com.jinzo.KillCounter
+api-version: 1.16
+folia-supported: true
+
+commands:
+  lastKilled:
+    description: Shows the last player killed with the weapon you're holding.
+    usage: /lastKilled
+    permission: killcounter.lastkilled
+    permission-message: You do not have permission to use /lastKilled.
+  resetKills:
+    description: Resets the kill counter and last killed player for the held weapon.
+    usage: /resetKills
+    permission: killcounter.resetkills
+    permission-message: You do not have permission to use /resetKills.
+  showitem:
+    description: Broadcasts the item you're holding with hoverable details
+    usage: /showitem
+
+permissions:
+  killcounter.lastkilled:
+    description: Allows use of /lastKilled command
+    default: true
+
+  killcounter.resetkills:
+    description: Allows use of /resetKills command
+    default: true
