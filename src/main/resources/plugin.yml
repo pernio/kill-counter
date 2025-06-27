@@ -18,6 +18,8 @@ commands:
   showitem:
     description: Broadcasts the item you're holding with hoverable details
     usage: /showitem
+    permission: killcounter.showitem
+    permission-message: You do not have permission to use /resetKills.
 
 permissions:
   killcounter.lastkilled:

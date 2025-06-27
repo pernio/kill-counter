@@ -24,6 +24,4 @@ public class ConfigManager {
     public int getCooldown() {
         return config.getInt("cooldown", 5);
     }
-
-    // Add more getters here if needed
 }
