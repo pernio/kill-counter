@@ -11,7 +11,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class ShowItemCommand implements CommandExecutor {
+
+    private static final long COOLDOWN = 5000;
+    private final Map<UUID, Long> cooldowns = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -20,13 +27,26 @@ public class ShowItemCommand implements CommandExecutor {
             return true;
         }
 
+        UUID playerId = player.getUniqueId();
+        long currentTime = System.currentTimeMillis();
+
+        if (cooldowns.containsKey(playerId)) {
+            long lastUsed = cooldowns.get(playerId);
+            if ((currentTime - lastUsed) < COOLDOWN) {
+                long timeLeft = (COOLDOWN - (currentTime - lastUsed)) / 1000;
+                player.sendMessage(Component.text("Please wait " + timeLeft + " more seconds before using this command again.", NamedTextColor.RED));
+                return true;
+            }
+        }
+
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType() == Material.AIR) {
             player.sendMessage("You must hold an item.");
             return true;
         }
 
-        // Build message using full item hover
+        cooldowns.put(playerId, currentTime);
+
         Component message = Component.empty()
                 .append(Component.text(player.getName(), NamedTextColor.YELLOW))
                 .append(Component.text(" is holding "))
