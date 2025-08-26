@@ -5,10 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.jinzo</groupId>
-	<artifactId>kill-counter</artifactId>
+	<artifactId>kill-tracker</artifactId>
 	<version>1.0.0</version>
-	<name>kill-counter</name>
-	<description>A simple plugin to keep track of kills on items</description>
+	<name>kill-tracker</name>
+	<description>A simple plugin to keep track of kills on items.</description>
 
 	<properties>
 		<java.version>21</java.version>

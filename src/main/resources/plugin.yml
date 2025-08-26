@@ -1,31 +1,28 @@
-name: KillCounter
+name: KillTracker
 version: 1.0.0
-main: com.jinzo.KillCounter
+main: com.jinzo.KillTracker
 api-version: 1.16
-folia-supported: true
+# folia-supported: true
 
 commands:
-  lastKilled:
-    description: Shows the last player killed with the weapon you're holding.
-    usage: /lastKilled
-    permission: killcounter.lastkilled
-    permission-message: You do not have permission to use /lastKilled.
-  resetKills:
-    description: Resets the kill counter and last killed player for the held weapon.
-    usage: /resetKills
-    permission: killcounter.resetkills
-    permission-message: You do not have permission to use /resetKills.
-  showitem:
-    description: Broadcasts the item you're holding with hoverable details
-    usage: /showitem
-    permission: killcounter.showitem
-    permission-message: You do not have permission to use /resetKills.
+  killtracker:
+    description: Root command for KillTracker plugin
+    aliases: [kt]
+    permission: killtracker.use
+    permission-message: You do not have permission to use this command.
 
 permissions:
-  killcounter.lastkilled:
-    description: Allows use of /lastKilled command
+  killtracker.use:
+    description: Allows use of /killtracker base command
     default: true
+    children:
+      killtracker.reset: true
+      killtracker.show: true
 
-  killcounter.resetkills:
-    description: Allows use of /resetKills command
-    default: true
+  killtracker.admin:
+    description: Allows use of admin commands
+    default: op
+    children:
+      killtracker.change: true
+      killtracker.reload: true
+      killtracker.set: true

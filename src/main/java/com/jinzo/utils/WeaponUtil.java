@@ -1,67 +1,113 @@
 package com.jinzo.utils;
 
-import com.jinzo.KillCounter;
-import org.bukkit.ChatColor;
+import com.jinzo.KillTracker;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Set;
-import java.util.UUID;
 
 public class WeaponUtil {
-    private static final Set<Material> TRACKED_ITEMS = Set.of(
-            Material.WOODEN_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.NETHERITE_SWORD,
-            Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE,
-            Material.BOW, Material.CROSSBOW, Material.MACE, Material.TRIDENT
-    );
+    public static NamespacedKey KILL_COUNT_KEY;
+    public static NamespacedKey LAST_KILLED_KEY;
+    public static NamespacedKey LAST_KILLER_KEY;
+    public static NamespacedKey KILL_STREAK_KEY;
+
+    public static void initialize(KillTracker plugin) {
+        KILL_COUNT_KEY = new NamespacedKey(plugin, "kill-count");
+        LAST_KILLED_KEY = new NamespacedKey(plugin, "last-killed");
+        LAST_KILLER_KEY = new NamespacedKey(plugin, "last-killer");
+        KILL_STREAK_KEY = new NamespacedKey(plugin, "kill-streak");
+    }
 
     public static boolean isTrackedWeapon(ItemStack item) {
-        return item != null && TRACKED_ITEMS.contains(item.getType());
+        if (item == null || item.getType() == Material.AIR) return false;
+        return KillTracker.getInstance().getConfiguration().trackedWeapons.contains(item.getType());
     }
 
-    public static String getWeaponKey(ItemStack weapon) {
-        if (weapon == null || !weapon.hasItemMeta()) return "";
-        ItemMeta meta = weapon.getItemMeta();
-        PersistentDataContainer data = meta.getPersistentDataContainer();
-        return data.get(new NamespacedKey("killcounter", "weapon-uuid"), PersistentDataType.STRING);
+    public static int getKillCount(ItemStack weapon) {
+        if (!weapon.hasItemMeta()) return 0;
+        Integer count = weapon.getItemMeta().getPersistentDataContainer().get(KILL_COUNT_KEY, PersistentDataType.INTEGER);
+        return count != null ? count : 0;
     }
 
-    public static String getOrCreateWeaponKey(ItemStack weapon, KillCounter plugin) {
+    public static void setKillCount(ItemStack weapon, int count) {
         ItemMeta meta = weapon.getItemMeta();
-        NamespacedKey key = new NamespacedKey(plugin, "weapon-uuid");
+        meta.getPersistentDataContainer().set(KILL_COUNT_KEY, PersistentDataType.INTEGER, count);
+        weapon.setItemMeta(meta);
+    }
+
+    public static void incrementKillCount(ItemStack weapon) {
+        int current = getKillCount(weapon);
+        ItemMeta meta = weapon.getItemMeta();
+        meta.getPersistentDataContainer().set(KILL_COUNT_KEY, PersistentDataType.INTEGER, current + 1);
+        weapon.setItemMeta(meta);
+    }
+
+    public static void decrementKillCount(ItemStack weapon) {
+        int current = getKillCount(weapon);
+        if (current > 0) {
+            ItemMeta meta = weapon.getItemMeta();
+            meta.getPersistentDataContainer().set(KILL_COUNT_KEY, PersistentDataType.INTEGER, current - 1);
+            weapon.setItemMeta(meta);
+        }
+    }
+
+    public static String getLastKilled(ItemStack weapon) {
+        if (!weapon.hasItemMeta()) return null;
+        return weapon.getItemMeta().getPersistentDataContainer().get(LAST_KILLED_KEY, PersistentDataType.STRING);
+    }
+
+    public static void setLastKilled(ItemStack weapon, String name) {
+        ItemMeta meta = weapon.getItemMeta();
+        meta.getPersistentDataContainer().set(LAST_KILLED_KEY, PersistentDataType.STRING, name);
+        weapon.setItemMeta(meta);
+    }
+
+    public static String getLastKiller(ItemStack weapon) {
+        if (!weapon.hasItemMeta()) return null;
+        return weapon.getItemMeta().getPersistentDataContainer().get(LAST_KILLER_KEY, PersistentDataType.STRING);
+    }
+
+    public static void setLastKiller(ItemStack weapon, String name) {
+        ItemMeta meta = weapon.getItemMeta();
+        meta.getPersistentDataContainer().set(LAST_KILLER_KEY, PersistentDataType.STRING, name);
+        weapon.setItemMeta(meta);
+    }
+
+    public static int getKillStreak(ItemStack weapon) {
+        if (!weapon.hasItemMeta()) return 0;
+        Integer streak = weapon.getItemMeta().getPersistentDataContainer().get(KILL_STREAK_KEY, PersistentDataType.INTEGER);
+        return streak != null ? streak : 0;
+    }
+
+    public static void setKillStreak(ItemStack weapon, int streak) {
+        ItemMeta meta = weapon.getItemMeta();
+        meta.getPersistentDataContainer().set(KILL_STREAK_KEY, PersistentDataType.INTEGER, streak);
+        weapon.setItemMeta(meta);
+    }
+
+    public static void incrementKillStreak(ItemStack weapon) {
+        int currentStreak = getKillStreak(weapon);
+        setKillStreak(weapon, currentStreak + 1);
+    }
+
+    public static void decrementKillStreak(ItemStack weapon) {
+        int currentStreak = getKillStreak(weapon);
+        if (currentStreak > 0) {
+            setKillStreak(weapon, currentStreak - 1);
+        }
+    }
+
+    public static void resetWeaponMeta(ItemStack weapon, KillTracker plugin) {
+        ItemMeta meta = weapon.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        String id = container.get(key, PersistentDataType.STRING);
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-            container.set(key, PersistentDataType.STRING, id);
-            String finalId = id;
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    weapon.setItemMeta(meta);
-                }
-            }.runTask(plugin);
-        }
-        return id;
-    }
-
-    public static void resetWeaponMeta(ItemStack weapon, KillCounter plugin) {
-        ItemMeta meta = weapon.getItemMeta();
-        meta.getPersistentDataContainer().remove(new NamespacedKey(plugin, "weapon-uuid"));
-        if (meta.hasLore()) {
-            meta.setLore(null);
-        }
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                weapon.setItemMeta(meta);
-            }
-        }.runTask(plugin);
+        container.remove(KILL_COUNT_KEY);
+        container.remove(LAST_KILLED_KEY);
+        container.remove(LAST_KILLER_KEY);
+        container.remove(KILL_STREAK_KEY); // Also reset streak
+        meta.setLore(null);
+        weapon.setItemMeta(meta);
     }
 }
-

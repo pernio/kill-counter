@@ -1,2 +1,91 @@
+# +-------------------------------------------------------------+
+# |                                                             |
+# |                        Kill Tracker                         |
+# |       A simple plugin to keep track of kills on items       |
+# |                                                             |
+# +-------------------------------------------------------------+
+
+# +-------------------------------------------------------------+
+# |                     Security settings                       |
+# +-------------------------------------------------------------+
+
+# If true, mob kills will also be counted
+count_mob_kills: false
+
+# Cooldown for players to kill with the same weapon in seconds
+kill_cooldown: 60
+
 # Cooldown for show item command in seconds
-cooldown: 60
+show_cooldown: 120
+
+# Maximum amount of kills a weapon can track
+# -1 means unlimited
+max_kills: -1
+
+# If true, the plugin will change the kill streak when /kt add or /kt subtract is used
+admin_change_kill_streak: true
+
+# If false, the kill of the player listed as "last killed" on the weapon won't count
+# To prevent kill farming by killing the same player over and over
+count_last_killed: false
+
+# If false, the kill of the player listed as "last killer" on the weapon won't count
+# To prevent kill farming by passing the weapon around
+count_last_killer: false
+
+# Weapons to track for kills
+tracked_weapons:
+  - WOODEN_SWORD
+  - STONE_SWORD
+  - IRON_SWORD
+  - DIAMOND_SWORD
+  - NETHERITE_SWORD
+  - WOODEN_AXE
+  - STONE_AXE
+  - IRON_AXE
+  - DIAMOND_AXE
+  - NETHERITE_AXE
+  - BOW
+  - CROSSBOW
+  - MACE
+  - TRIDENT
+
+# +-------------------------------------------------------------+
+# |                      Level settings                         |
+# +-------------------------------------------------------------+
+
+# Whether to enable kill streaks
+# If enabled, a new lore line will be added to the weapon
+# Resets on death
+kill_streak: true
+
+# Whether the player should be notified when they reach a new level of amount killed
+notify_on_level_up: true
+
+# Levels & colors for kill tracking:
+# Full list: https://jd.advntr.dev/api/latest/net/kyori/adventure/text/format/NamedTextColor.html
+kill_levels:
+  - kills: 1
+    name: "Novice"
+    color: "gray"
+  - kills: 10
+    name: "Apprentice"
+    color: "green"
+  - kills: 25
+    name: "Journeyman"
+    color: "aqua"
+  - kills: 50
+    name: "Expert"
+    color: "yellow"
+  - kills: 100
+    name: "Master"
+    color: "gold"
+  - kills: 250
+    name: "Grandmaster"
+    color: "red"
+  - kills: 500
+    name: "Legend"
+    color: "light_purple"
+  - kills: 1000
+    name: "Mythic"
+    color: "dark_purple"
