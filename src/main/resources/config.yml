@@ -11,9 +11,6 @@ count_mob_kills: false
 # Cooldown for players to kill with the same weapon in seconds
 kill_cooldown: 60
 
-# Cooldown for show item command in seconds
-show_cooldown: 30
-
 # Whether to enable kill streaks
 # If enabled, a new lore line will be added to the weapon
 # Resets on death
@@ -33,12 +30,6 @@ count_last_killed: false
 # If false, the kill of the player listed as "last killer" on the weapon won't count
 # To prevent kill farming by passing the weapon around
 count_last_killer: false
-
-# If true, you can only use the show command on tracked weapons
-only_show_tracked_weapons: false
-
-# The text between the playername & weapon when showing the item to the chat
-show_item_text: "shared"
 
 # Weapons to track for kills
 tracked_weapons:

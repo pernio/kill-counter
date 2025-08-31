@@ -4,7 +4,6 @@ import com.jinzo.KillTracker;
 import com.jinzo.commands.admin.set.lastKillerKill;
 import com.jinzo.commands.admin.subtractKill;
 import com.jinzo.commands.use.infoKill;
-import com.jinzo.commands.use.showKill;
 import com.jinzo.commands.use.resetKill;
 import com.jinzo.commands.admin.addKill;
 import com.jinzo.commands.admin.reloadKill;
@@ -30,7 +29,6 @@ public class killCommand implements CommandExecutor, TabCompleter {
     private final KillTracker plugin = KillTracker.getInstance();
 
     private final infoKill infoKillCmd = new infoKill();
-    private final showKill showKillCmd = new showKill();
     private final resetKill resetKillCmd = new resetKill();
     private final addKill addKillCmd = new addKill();
     private final subtractKill subtractKillCmd = new subtractKill();
@@ -66,13 +64,6 @@ public class killCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
                 return infoKillCmd.onCommand(sender, command, label, args);
-            }
-            case "show" -> {
-                if (!player.hasPermission("killtracker.show")) {
-                    noPerm(player);
-                    return false;
-                }
-                return showKillCmd.onCommand(sender, command, label, args);
             }
             case "reset" -> {
                 if (!player.hasPermission("killtracker.reset")) {
@@ -151,9 +142,6 @@ public class killCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(Component.text("Usage:", NamedTextColor.YELLOW));
 
         player.sendMessage(Component.text("/kt info", NamedTextColor.AQUA));
-        if (player.hasPermission("killtracker.show")) {
-            player.sendMessage(Component.text("/kt show", NamedTextColor.AQUA));
-        }
         if (player.hasPermission("killtracker.reset")) {
             player.sendMessage(Component.text("/kt reset", NamedTextColor.AQUA));
         }
@@ -176,11 +164,6 @@ public class killCommand implements CommandExecutor, TabCompleter {
 
         player.sendMessage(Component.text("/kt info", NamedTextColor.AQUA));
         player.sendMessage(Component.text("  View your kill stats", NamedTextColor.GRAY));
-
-        if (player.hasPermission("killtracker.show")) {
-            player.sendMessage(Component.text("/kt show", NamedTextColor.AQUA));
-            player.sendMessage(Component.text("  Show others the weapon you're holding", NamedTextColor.GRAY));
-        }
 
         if (player.hasPermission("killtracker.reset")) {
             player.sendMessage(Component.text("/kt reset", NamedTextColor.AQUA));
@@ -229,17 +212,13 @@ public class killCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             return Stream.of(
-                            "info", "show", "reset", "help", "?",
+                            "info", "reset", "help", "?",
                             "add", "subtract", "sub", "reload", "set"
                     )
                     .filter(sub -> {
                         String perm;
                         switch (sub) {
-                            // Basic user commands
                             case "info", "help", "?" -> perm = "killtracker.use";
-
-                            // Admin commands
-                            case "show" -> perm = "killtracker.show";
                             case "reset" -> perm = "killtracker.reset";
                             case "add" -> perm = "killtracker.change";
                             case "subtract", "sub" -> perm = "killtracker.change";

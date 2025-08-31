@@ -2,10 +2,7 @@ name: KillTracker
 version: 1.0.0
 main: com.jinzo.KillTracker
 api-version: 1.21
-# folia-supported: true
-softdepend:
-  - Essentials
-
+folia-supported: true
 
 commands:
   killtracker:
@@ -20,7 +17,6 @@ permissions:
     default: true
     children:
       killtracker.reset: true
-      killtracker.show: true
 
   killtracker.admin:
     description: Allows use of admin commands
