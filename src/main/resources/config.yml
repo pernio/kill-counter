@@ -5,10 +5,6 @@
 # |                                                             |
 # +-------------------------------------------------------------+
 
-# +-------------------------------------------------------------+
-# |                     Security settings                       |
-# +-------------------------------------------------------------+
-
 # If true, mob kills will also be counted
 count_mob_kills: false
 
@@ -16,7 +12,12 @@ count_mob_kills: false
 kill_cooldown: 60
 
 # Cooldown for show item command in seconds
-show_cooldown: 120
+show_cooldown: 30
+
+# Whether to enable kill streaks
+# If enabled, a new lore line will be added to the weapon
+# Resets on death
+kill_streak: true
 
 # Maximum amount of kills a weapon can track
 # -1 means unlimited
@@ -32,6 +33,12 @@ count_last_killed: false
 # If false, the kill of the player listed as "last killer" on the weapon won't count
 # To prevent kill farming by passing the weapon around
 count_last_killer: false
+
+# If true, you can only use the show command on tracked weapons
+only_show_tracked_weapons: false
+
+# The text between the playername & weapon when showing the item to the chat
+show_item_text: "shared"
 
 # Weapons to track for kills
 tracked_weapons:
@@ -49,43 +56,3 @@ tracked_weapons:
   - CROSSBOW
   - MACE
   - TRIDENT
-
-# +-------------------------------------------------------------+
-# |                      Level settings                         |
-# +-------------------------------------------------------------+
-
-# Whether to enable kill streaks
-# If enabled, a new lore line will be added to the weapon
-# Resets on death
-kill_streak: true
-
-# Whether the player should be notified when they reach a new level of amount killed
-notify_on_level_up: true
-
-# Levels & colors for kill tracking:
-# Full list: https://jd.advntr.dev/api/latest/net/kyori/adventure/text/format/NamedTextColor.html
-kill_levels:
-  - kills: 1
-    name: "Novice"
-    color: "gray"
-  - kills: 10
-    name: "Apprentice"
-    color: "green"
-  - kills: 25
-    name: "Journeyman"
-    color: "aqua"
-  - kills: 50
-    name: "Expert"
-    color: "yellow"
-  - kills: 100
-    name: "Master"
-    color: "gold"
-  - kills: 250
-    name: "Grandmaster"
-    color: "red"
-  - kills: 500
-    name: "Legend"
-    color: "light_purple"
-  - kills: 1000
-    name: "Mythic"
-    color: "dark_purple"

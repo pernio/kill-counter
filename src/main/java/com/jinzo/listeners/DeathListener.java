@@ -5,11 +5,7 @@ import com.jinzo.utils.ConfigManager;
 import com.jinzo.utils.LoreUtil;
 import com.jinzo.utils.WeaponUtil;
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,10 +13,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class DeathListener implements Listener {
     private final KillTracker plugin;
@@ -32,41 +30,58 @@ public class DeathListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (event.getEntity() == null) return;
         Player dead = event.getEntity();
         if (!dead.hasPermission("killtracker.use")) return;
-        Player killer = dead.getKiller();
+
         ConfigManager config = plugin.getConfiguration();
 
-        // Reset kill streak if enabled
         if (config.killStreak) {
-            for (ItemStack item : dead.getInventory().getContents()) {
+            PlayerInventory inv = dead.getInventory();
+
+            Consumer<ItemStack> reset = item -> {
                 if (item != null && WeaponUtil.isTrackedWeapon(item)) {
                     WeaponUtil.setKillStreak(item, 0);
                     LoreUtil.updateLoreFromNBT(item);
                 }
+            };
+
+            // main storage
+            for (ItemStack item : inv.getContents()) reset.accept(item);
+
+            // armor & extra (offhand lives in extra on some versions)
+            for (ItemStack item : inv.getArmorContents()) reset.accept(item);
+            for (ItemStack item : inv.getExtraContents()) reset.accept(item);
+
+            // explicit offhand (covers all versions)
+            reset.accept(inv.getItemInOffHand());
+
+            // ITEM ON CURSOR (the "dragging" case)
+            ItemStack cursor = dead.getItemOnCursor();
+            if (cursor != null) {
+                reset.accept(cursor);
+                // make sure changes stick
+                dead.setItemOnCursor(cursor);
             }
         }
 
+        Player killer = dead.getKiller();
         if (killer == null || dead.getUniqueId().equals(killer.getUniqueId())) return;
 
-        processKill(killer, dead.getName(), config);
+        processKill(killer, dead.getName(), plugin.getConfiguration());
     }
 
     @EventHandler
     public void onMobDeath(EntityDeathEvent event) {
         LivingEntity dead = event.getEntity();
 
-        // Ignore players here — handled in onPlayerDeath
         if (dead instanceof Player) return;
 
-        Player killer = dead.getKiller(); // valid now
+        Player killer = dead.getKiller();
         if (killer == null) return;
 
         ConfigManager config = plugin.getConfiguration();
         if (!config.countMobKills) return;
 
-        // Use custom name if present, otherwise entity type name
         String killedName = dead.getCustomName() != null
                 ? dead.getCustomName()
                 : dead.getType().name().toLowerCase().replace("_", " ");
@@ -100,8 +115,6 @@ public class DeathListener implements Listener {
             int maxKills = config.maxKills;
             if (maxKills != -1 && currentKills >= maxKills) return;
 
-            int previousLevel = config.getKillLevel(currentKills);
-
             synchronized (killCooldowns) {
                 killCooldowns.put(killerId, now);
             }
@@ -117,22 +130,6 @@ public class DeathListener implements Listener {
             }
 
             LoreUtil.updateLoreFromNBT(weapon);
-
-            // Notify if level changed
-            if (config.notifyOnLevelUp) {
-                int newKills = currentKills + 1;
-                int newLevel = config.getKillLevel(newKills);
-                TextColor color = ConfigManager.getColorDataForKillCount(newKills).color;
-                if (newLevel > previousLevel) {
-                    ConfigManager.ColorData colorData = ConfigManager.getColorDataForKillCount(newKills);
-                    killer.sendMessage(Component.text(
-                            "Your weapon has reached ", NamedTextColor.GRAY)
-                            .append(Component.text(LoreUtil.formatNumber(newKills), color))
-                            .append(Component.text(newKills == 1 ? " kill " : " kills " + "and leveled up to ", NamedTextColor.GRAY))
-                            .append(Component.text(colorData.name).color(colorData.color))
-                    );
-                }
-            }
         });
     }
 }

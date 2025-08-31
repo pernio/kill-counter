@@ -24,33 +24,31 @@ public class LoreUtil {
         String last = WeaponUtil.getLastKilled(item);
 
         if (count > 0) {
-            TextColor color = ConfigManager.getColorDataForKillCount(count).color;
             String formatted = formatNumber(count);
 
             lore.add(Component.text("Amount killed: ")
                     .color(NamedTextColor.GRAY)
                     .decoration(TextDecoration.ITALIC, false)
                     .append(Component.text(formatted)
-                            .color(color)
                             .decoration(TextDecoration.ITALIC, false)));
-        }
-
-        if (last != null) {
-            lore.add(Component.text("Last killed: " + last)
-                    .color(NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
         }
 
         int streak = WeaponUtil.getKillStreak(item);
         if (plugin.getConfiguration().killStreak && streak > 0) {
-            TextColor color = ConfigManager.getColorDataForKillCount(streak).color;
             String formatted = formatNumber(streak);
 
             lore.add(Component.text("Kill streak: ")
                     .color(NamedTextColor.GRAY)
                     .decoration(TextDecoration.ITALIC, false)
                     .append(Component.text(formatted)
-                            .color(color)
+                            .decoration(TextDecoration.ITALIC, false)));
+        }
+
+        if (last != null) {
+            lore.add(Component.text("Last killed: ")
+                    .color(NamedTextColor.GRAY)
+                    .decoration(TextDecoration.ITALIC, false)
+                    .append(Component.text(last)
                             .decoration(TextDecoration.ITALIC, false)));
         }
 

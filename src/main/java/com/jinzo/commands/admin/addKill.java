@@ -1,12 +1,10 @@
 package com.jinzo.commands.admin;
 
 import com.jinzo.KillTracker;
-import com.jinzo.utils.ConfigManager;
 import com.jinzo.utils.LoreUtil;
 import com.jinzo.utils.WeaponUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +13,13 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class addKill implements CommandExecutor {
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender,
+                             @NotNull Command command,
+                             @NotNull String label,
+                             String @NotNull [] args) {
+
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
             return false;
@@ -61,22 +65,13 @@ public class addKill implements CommandExecutor {
             WeaponUtil.setKillStreak(held, newKills);
         }
 
-        player.sendMessage(Component.text(action + " " + LoreUtil.formatNumber(Math.abs(affectedAmount)) + (affectedAmount == 1 ? " kill " : " kills ") + (amount > 0 ? "to" : "from") + " your weapon.", NamedTextColor.GREEN));
+        player.sendMessage(Component.text(
+                action + " " + LoreUtil.formatNumber(Math.abs(affectedAmount)) +
+                        (Math.abs(affectedAmount) == 1 ? " kill " : " kills ") +
+                        (amount > 0 ? "to" : "from") + " your weapon.",
+                NamedTextColor.GREEN));
+
         LoreUtil.updateLoreFromNBT(held);
-
-        // Notify if level changed
-        ConfigManager config = KillTracker.getInstance().getConfiguration();
-        if (config.notifyOnLevelUp) {
-            ConfigManager.ColorData previousLevel = ConfigManager.getColorDataForKillCount(currentKills);
-            ConfigManager.ColorData newLevel = ConfigManager.getColorDataForKillCount(newKills);
-
-            if (previousLevel != newLevel) {
-                player.sendMessage(Component.text(
-                                "Your weapon has a new title: ", NamedTextColor.GRAY)
-                        .append(Component.text(newLevel.name).color(newLevel.color))
-                );
-            }
-        }
 
         return true;
     }

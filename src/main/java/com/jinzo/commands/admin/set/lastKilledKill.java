@@ -34,9 +34,13 @@ public class lastKilledKill implements CommandExecutor {
             return false;
         }
 
-        WeaponUtil.setLastKilled(held, args[2]);
-
-        player.sendMessage(Component.text("Last killed set to " + args[2] + ".", NamedTextColor.GREEN));
+        if (args[2].equals("null")) {
+            WeaponUtil.clearData(held, WeaponUtil.LAST_KILLED_KEY);
+            player.sendMessage(Component.text("Last killed cleared.", NamedTextColor.GREEN));
+        } else {
+            WeaponUtil.setLastKilled(held, args[2]);
+            player.sendMessage(Component.text("Last killed set to " + args[2] + ".", NamedTextColor.GREEN));
+        }
 
         LoreUtil.updateLoreFromNBT(held);
         return true;

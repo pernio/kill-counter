@@ -25,7 +25,7 @@ public class streakKill implements CommandExecutor {
 
         int amount;
         try {
-            amount = Integer.parseInt(args[2]);
+            amount = args[2].equals("null") ? 0 : Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             player.sendMessage(Component.text("Please enter a valid number.", NamedTextColor.RED));
             return false;
@@ -42,9 +42,13 @@ public class streakKill implements CommandExecutor {
             return false;
         }
 
-        WeaponUtil.setKillStreak(held, amount);
-
-        player.sendMessage(Component.text("Kill streak set to " + LoreUtil.formatNumber(amount) + ".", NamedTextColor.GREEN));
+        if (amount == 0) {
+            WeaponUtil.clearData(held, WeaponUtil.KILL_STREAK_KEY);
+            player.sendMessage(Component.text("Kill streak cleared.", NamedTextColor.GREEN));
+        } else {
+            WeaponUtil.setKillStreak(held, amount);
+            player.sendMessage(Component.text("Kill streak set to " + LoreUtil.formatNumber(amount) + ".", NamedTextColor.GREEN));
+        }
 
         LoreUtil.updateLoreFromNBT(held);
         return true;

@@ -33,9 +33,13 @@ public class lastKillerKill {
             return false;
         }
 
-        WeaponUtil.setLastKiller(held, args[2]);
-
-        player.sendMessage(Component.text("Last killer set to " + args[2] + ".", NamedTextColor.GREEN));
+        if (args[2].equals("null")) {
+            WeaponUtil.clearData(held, WeaponUtil.LAST_KILLER_KEY);
+            player.sendMessage(Component.text("Last killer cleared.", NamedTextColor.GREEN));
+        } else {
+            WeaponUtil.setLastKiller(held, args[2]);
+            player.sendMessage(Component.text("Last killer set to " + args[2] + ".", NamedTextColor.GREEN));
+        }
 
         LoreUtil.updateLoreFromNBT(held);
         return true;

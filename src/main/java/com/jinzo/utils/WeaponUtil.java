@@ -45,15 +45,6 @@ public class WeaponUtil {
         weapon.setItemMeta(meta);
     }
 
-    public static void decrementKillCount(ItemStack weapon) {
-        int current = getKillCount(weapon);
-        if (current > 0) {
-            ItemMeta meta = weapon.getItemMeta();
-            meta.getPersistentDataContainer().set(KILL_COUNT_KEY, PersistentDataType.INTEGER, current - 1);
-            weapon.setItemMeta(meta);
-        }
-    }
-
     public static String getLastKilled(ItemStack weapon) {
         if (!weapon.hasItemMeta()) return null;
         return weapon.getItemMeta().getPersistentDataContainer().get(LAST_KILLED_KEY, PersistentDataType.STRING);
@@ -88,26 +79,21 @@ public class WeaponUtil {
         weapon.setItemMeta(meta);
     }
 
-    public static void incrementKillStreak(ItemStack weapon) {
-        int currentStreak = getKillStreak(weapon);
-        setKillStreak(weapon, currentStreak + 1);
-    }
-
-    public static void decrementKillStreak(ItemStack weapon) {
-        int currentStreak = getKillStreak(weapon);
-        if (currentStreak > 0) {
-            setKillStreak(weapon, currentStreak - 1);
-        }
-    }
-
-    public static void resetWeaponMeta(ItemStack weapon, KillTracker plugin) {
+    public static void resetWeaponMeta(ItemStack weapon) {
         ItemMeta meta = weapon.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         container.remove(KILL_COUNT_KEY);
         container.remove(LAST_KILLED_KEY);
         container.remove(LAST_KILLER_KEY);
-        container.remove(KILL_STREAK_KEY); // Also reset streak
+        container.remove(KILL_STREAK_KEY);
         meta.setLore(null);
+        weapon.setItemMeta(meta);
+    }
+
+    public static void clearData(ItemStack weapon, NamespacedKey key) {
+        if (weapon == null || !weapon.hasItemMeta()) return;
+        ItemMeta meta = weapon.getItemMeta();
+        meta.getPersistentDataContainer().remove(key);
         weapon.setItemMeta(meta);
     }
 }

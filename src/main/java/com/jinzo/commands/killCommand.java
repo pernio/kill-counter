@@ -4,7 +4,6 @@ import com.jinzo.KillTracker;
 import com.jinzo.commands.admin.set.lastKillerKill;
 import com.jinzo.commands.admin.subtractKill;
 import com.jinzo.commands.use.infoKill;
-import com.jinzo.commands.use.lastKill;
 import com.jinzo.commands.use.showKill;
 import com.jinzo.commands.use.resetKill;
 import com.jinzo.commands.admin.addKill;
@@ -30,9 +29,7 @@ public class killCommand implements CommandExecutor, TabCompleter {
 
     private final KillTracker plugin = KillTracker.getInstance();
 
-    // Instances of each subcommand
     private final infoKill infoKillCmd = new infoKill();
-    private final lastKill lastKillCmd = new lastKill();
     private final showKill showKillCmd = new showKill();
     private final resetKill resetKillCmd = new resetKill();
     private final addKill addKillCmd = new addKill();
@@ -69,13 +66,6 @@ public class killCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
                 return infoKillCmd.onCommand(sender, command, label, args);
-            }
-            case "last" -> {
-                if (!player.hasPermission("killtracker.use")) {
-                    noPerm(player);
-                    return false;
-                }
-                return lastKillCmd.onCommand(sender, command, label, args);
             }
             case "show" -> {
                 if (!player.hasPermission("killtracker.show")) {
@@ -159,50 +149,67 @@ public class killCommand implements CommandExecutor, TabCompleter {
 
     private void sendUsage(Player player) {
         player.sendMessage(Component.text("Usage:", NamedTextColor.YELLOW));
-        player.sendMessage(Component.text("/kt info", NamedTextColor.GRAY));
-        player.sendMessage(Component.text("/kt last", NamedTextColor.GRAY));
+
+        player.sendMessage(Component.text("/kt info", NamedTextColor.AQUA));
         if (player.hasPermission("killtracker.show")) {
-            player.sendMessage(Component.text("/kt show", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt show", NamedTextColor.AQUA));
         }
         if (player.hasPermission("killtracker.reset")) {
-            player.sendMessage(Component.text("/kt reset", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt reset", NamedTextColor.AQUA));
         }
         if (player.hasPermission("killtracker.change")) {
-            player.sendMessage(Component.text("/kt add {amount}", NamedTextColor.GRAY));
-            player.sendMessage(Component.text("/kt subtract {amount}", NamedTextColor.GRAY));
-            player.sendMessage(Component.text("/kt sub {amount}", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt add {amount}", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("/kt subtract {amount}", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("/kt sub {amount}", NamedTextColor.AQUA));
         }
         if (player.hasPermission("killtracker.reload")) {
-            player.sendMessage(Component.text("/kt reload", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt reload", NamedTextColor.AQUA));
         }
         if (player.hasPermission("killtracker.set")) {
-            player.sendMessage(Component.text("/kt set {amount/streak/killed/killer} {amount/name} [#force]", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt set {amount/streak/killed/killer} {amount/name/null} [#force]", NamedTextColor.AQUA));
         }
-        player.sendMessage(Component.text("/kt help", NamedTextColor.GRAY));
+        player.sendMessage(Component.text("/kt help", NamedTextColor.AQUA));
     }
 
     private void sendFullUsage(Player player) {
         player.sendMessage(Component.text("KillTracker Commands:", NamedTextColor.GOLD));
-        player.sendMessage(Component.text("/kt info - View your kill stats", NamedTextColor.GRAY));
-        player.sendMessage(Component.text("/kt last - View your last kill", NamedTextColor.GRAY));
+
+        player.sendMessage(Component.text("/kt info", NamedTextColor.AQUA));
+        player.sendMessage(Component.text("  View your kill stats", NamedTextColor.GRAY));
+
         if (player.hasPermission("killtracker.show")) {
-            player.sendMessage(Component.text("/kt show - Show kills for a specific weapon", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt show", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("  Show others the weapon you're holding", NamedTextColor.GRAY));
         }
+
         if (player.hasPermission("killtracker.reset")) {
-            player.sendMessage(Component.text("/kt reset - Reset your kill stats", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt reset", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("  Reset your kill stats", NamedTextColor.GRAY));
         }
+
         if (player.hasPermission("killtracker.change")) {
-            player.sendMessage(Component.text("/kt add {amount} - Add kills to your stats", NamedTextColor.GRAY));
-            player.sendMessage(Component.text("/kt subtract {amount} - Subtract kills from your stats", NamedTextColor.GRAY));
-            player.sendMessage(Component.text("/kt sub {amount} - Alias for subtract", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt add {amount}", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("  Add kills to your stats", NamedTextColor.GRAY));
+
+            player.sendMessage(Component.text("/kt subtract {amount}", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("  Subtract kills from your stats", NamedTextColor.GRAY));
+
+            player.sendMessage(Component.text("/kt sub {amount}", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("  Alias for subtract", NamedTextColor.GRAY));
         }
+
         if (player.hasPermission("killtracker.reload")) {
-            player.sendMessage(Component.text("/kt reload - Reload the plugin configuration", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt reload", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("  Reload the plugin configuration", NamedTextColor.GRAY));
         }
+
         if (player.hasPermission("killtracker.set")) {
-            player.sendMessage(Component.text("/kt set {amount/streak/killed/killer} {amount/name} [#force] - Set data to a specific amount", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("/kt set {amount/streak/killed/killer} {amount/name/null} [#force]", NamedTextColor.AQUA));
+            player.sendMessage(Component.text("  Set a specific value (amount/streak) or name the last killed/killer (use 'null' to clear).", NamedTextColor.GRAY));
         }
-        player.sendMessage(Component.text("/kt help - Show this help message", NamedTextColor.GRAY));
+
+        player.sendMessage(Component.text("/kt help", NamedTextColor.AQUA));
+        player.sendMessage(Component.text("  Show this help message", NamedTextColor.GRAY));
     }
 
     private void noPerm(Player player) {
@@ -222,15 +229,14 @@ public class killCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             return Stream.of(
-                            "info", "last", "show", "reset", "help", "?",
+                            "info", "show", "reset", "help", "?",
                             "add", "subtract", "sub", "reload", "set"
                     )
                     .filter(sub -> {
-                        // Map subcommands to real permission nodes
                         String perm;
                         switch (sub) {
                             // Basic user commands
-                            case "info", "last", "help", "?" -> perm = "killtracker.use";
+                            case "info", "help", "?" -> perm = "killtracker.use";
 
                             // Admin commands
                             case "show" -> perm = "killtracker.show";
@@ -247,7 +253,6 @@ public class killCommand implements CommandExecutor, TabCompleter {
                     .collect(Collectors.toList());
         }
 
-        // Number suggestions for add/subtract commands
         if (args.length == 2 &&
                 (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("subtract") || args[0].equalsIgnoreCase("sub"))) {
             if (player.hasPermission("killtracker.change")) {
@@ -257,32 +262,34 @@ public class killCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        // Set command suggestions
         if (args[0].equalsIgnoreCase("set")) {
-            if (args.length == 2) {
-                return Stream.of("amount", "streak", "killed", "killer")
-                        .filter(type -> type.startsWith(args[1].toLowerCase()))
-                        .collect(Collectors.toList());
-            }
-
-            if (args.length == 3) {
-                if (args[1].equalsIgnoreCase("killed") || args[1].equalsIgnoreCase("killer")) {
-                    // Provide list of online player names for last killed, also if config.count_mob_kills is true, suggest mob names
-                    return plugin.getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .filter(name -> name.startsWith(args[2]))
-                            .collect(Collectors.toList());
-                } else {
-                    return Stream.of("0", "1", "5", "10", "50", "100", "{amount}")
-                            .filter(num -> num.startsWith(args[2]))
+            if (player.hasPermission("killtracker.change")) {
+                if (args.length == 2) {
+                    return Stream.of("amount", "streak", "killed", "killer")
+                            .filter(type -> type.startsWith(args[1].toLowerCase()))
                             .collect(Collectors.toList());
                 }
-            }
 
-            if (args.length == 4) {
-                return Stream.of("#force")
-                        .filter(force -> force.startsWith(args[3].toLowerCase()))
-                        .collect(Collectors.toList());
+                if (args.length == 3) {
+                    if (args[1].equalsIgnoreCase("killed") || args[1].equalsIgnoreCase("killer")) {
+                        return java.util.stream.Stream.concat(
+                                        java.util.stream.Stream.of("null"),
+                                        plugin.getServer().getOnlinePlayers().stream().map(Player::getName)
+                                )
+                                .filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase()))
+                                .collect(java.util.stream.Collectors.toList());
+                    } else {
+                        return Stream.of("0", "1", "5", "10", "50", "100", "{amount}", "null")
+                                .filter(num -> num.startsWith(args[2]))
+                                .collect(Collectors.toList());
+                    }
+                }
+
+                if (args.length == 4) {
+                    return Stream.of("#force")
+                            .filter(force -> force.startsWith(args[3].toLowerCase()))
+                            .collect(Collectors.toList());
+                }
             }
         }
 

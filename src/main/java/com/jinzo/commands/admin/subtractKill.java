@@ -1,7 +1,6 @@
 package com.jinzo.commands.admin;
 
 import com.jinzo.KillTracker;
-import com.jinzo.utils.ConfigManager;
 import com.jinzo.utils.LoreUtil;
 import com.jinzo.utils.WeaponUtil;
 import net.kyori.adventure.text.Component;
@@ -60,22 +59,8 @@ public class subtractKill implements CommandExecutor {
             WeaponUtil.setKillStreak(held, newKills);
         }
 
-        player.sendMessage(Component.text(action + " " + LoreUtil.formatNumber(Math.abs(affectedAmount)) + (affectedAmount == 1 ? " kill " : " kills ") + (amount > 0 ? "from" : "to") + " your weapon.", NamedTextColor.GREEN));
+        player.sendMessage(Component.text(action + " " + LoreUtil.formatNumber(Math.abs(affectedAmount)) + (Math.abs(affectedAmount) == 1 ? " kill " : " kills ") + (amount > 0 ? "from" : "to") + " your weapon.", NamedTextColor.GREEN));
         LoreUtil.updateLoreFromNBT(held);
-
-        // Notify if level changed
-        ConfigManager config = KillTracker.getInstance().getConfiguration();
-        if (config.notifyOnLevelUp) {
-            ConfigManager.ColorData previousLevel = ConfigManager.getColorDataForKillCount(currentKills);
-            ConfigManager.ColorData newLevel = ConfigManager.getColorDataForKillCount(newKills);
-
-            if (previousLevel != newLevel) {
-                player.sendMessage(Component.text(
-                                "Your weapon has a new title: ", NamedTextColor.GRAY)
-                        .append(Component.text(newLevel.name).color(newLevel.color))
-                );
-            }
-        }
 
         return true;
     }
